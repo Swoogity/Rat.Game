@@ -43,7 +43,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
-  m_BackGroundColor: {r: 0.4528302, g: 0.4528302, b: 0.4528302, a: 0}
+  m_BackGroundColor: {r: 1, g: 1, b: 1, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -259,7 +259,15 @@ MonoBehaviour:
   jumpChargeRate: 155
   maxHeight: 800
   highJump: 0
+  wallJumpHeight: 850
   isOnGround: 1
+  touchWall: 0
+  stuck: 0
+  bounceHeight: 1300
+  health: 3
+  health3: {fileID: 0}
+  health2: {fileID: 0}
+  health1: {fileID: 0}
 --- !u!33 &8696558100316772521
 MeshFilter:
   m_ObjectHideFlags: 0

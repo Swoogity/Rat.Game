@@ -1,4 +1,4 @@
-using UnityEngine;
+ using UnityEngine;
 using UnityEngine.SceneManagement;
 
 public class PlayerController : MonoBehaviour
@@ -26,7 +26,14 @@ public class PlayerController : MonoBehaviour
     Rigidbody2D rBody;
     public bool isOnGround = true;
     public bool touchWall = false;
+    public bool stuck = false;
     public float bounceHeight = 10.0f;
+
+    // health
+    public float health = 3;
+    public GameObject health3;
+    public GameObject health2;
+    public GameObject health1;
 
     // -----------------------------------------------------------START---------------------------------------------------------//
     // Start is called before the first frame update
@@ -52,7 +59,7 @@ public class PlayerController : MonoBehaviour
         }
 
         // walking right acceleration 
-        if (Input.GetKey(MoveRight))
+        if (Input.GetKey(MoveRight) && stuck == false)
         {
             // walking speed
             speed += accelerationRate * Time.deltaTime;
@@ -78,7 +85,7 @@ public class PlayerController : MonoBehaviour
         }
 
         // walking left acceleration 
-        if (Input.GetKey(MoveLeft))
+        if (Input.GetKey(MoveLeft) && stuck == false)
         {
             // walking speed
             speed += accelerationRate * Time.deltaTime;
@@ -102,6 +109,14 @@ public class PlayerController : MonoBehaviour
             topSpeed = false;
             highJump = true;
         }
+        // if player gets stuck in speedtrap:
+        if (stuck == true) 
+        {
+            topSpeed = false;
+            highJump = false;
+            speed = 110;
+            jumpHeight = 400;
+        }
 
         // ----------------------------------------JUMPING-------------------------------------------//
         // jump
@@ -115,6 +130,30 @@ public class PlayerController : MonoBehaviour
         {
             rBody.AddForce(transform.up * wallJumpHeight, ForceMode2D.Impulse);
         }
+
+        // ----------------------------------------HEALTH-------------------------------------------//
+        if (health == 3) 
+        {
+            health3.SetActive(true);
+            health2.SetActive(false);
+            health1.SetActive(false);
+        }
+        if (health == 2)
+        {
+            health3.SetActive(false);
+            health2.SetActive(true);
+            health1.SetActive(false);
+        }
+        if (health == 1)
+        {
+            health3.SetActive(false);
+            health2.SetActive(false);
+            health1.SetActive(true);
+        }
+        if (health == 0) 
+        {
+            SceneManager.LoadScene("GameOver_1");
+        }
     }
     // ----------------------------------------PLAYER ENVIROMENT COLLISION-------------------------------------------//
     private void OnCollisionEnter2D(Collision2D collision2D)
@@ -126,6 +165,21 @@ public class PlayerController : MonoBehaviour
             highJump = false;
         }
     }
+    // wall jumping
+    private void OnCollisionStay2D(Collision2D collision2D)
+    {
+        if (collision2D.gameObject.CompareTag("wall"))
+        {
+            touchWall = true;
+        }
+    }
+    private void OnCollisionExit2D(Collision2D collision2D)
+    {
+        if (collision2D.gameObject.CompareTag("wall"))
+        {
+            touchWall = false;
+        }
+    }
 
     private void OnTriggerEnter2D(Collider2D other) 
     {
@@ -135,8 +189,20 @@ public class PlayerController : MonoBehaviour
             Destroy(other.gameObject);
         }
 
-        // if the player gets caught by the chasing thing
-        if (other.CompareTag("Death")) 
+        // speed trap / sticky ground
+        if (other.CompareTag("SpeedTrap")) 
+        {
+            stuck = true;
+        }
+
+        // damage trap
+        if (other.CompareTag("DamageTrap")) 
+        {
+            health -= 1;
+        }
+
+            // if the player gets caught by the chasing thing
+            if (other.CompareTag("Death")) 
         {
             SceneManager.LoadScene("GameOver_1");
         }
@@ -153,19 +219,12 @@ public class PlayerController : MonoBehaviour
             SceneManager.LoadScene("WinScreen_1");
         }
     }
-    // wall jumping
-    private void OnCollisionStay2D(Collision2D collision2D)
+    private void OnTriggerExit2D(Collider2D other)
     {
-        if (collision2D.gameObject.CompareTag("wall"))
+        // if player escapes speed trap
+        if (other.CompareTag("SpeedTrap"))
         {
-            touchWall = true;
-        }
-    }
-    private void OnCollisionExit2D(Collision2D collision2D)
-    {
-        if (collision2D.gameObject.CompareTag("wall"))
-        {
-            touchWall = false;
+            stuck = false;
         }
     }
 }
