@@ -10,6 +10,11 @@ public class menu : MonoBehaviour
         SceneManager.LoadScene("Level_1");
     }
 
+    public void OnLevel1Button() 
+    {
+        SceneManager.LoadScene("LEVEL-1");
+    }
+
     public void OnLevelSelectButton() 
     {
         SceneManager.LoadScene("LevelSelect");
